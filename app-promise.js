@@ -57,11 +57,53 @@ const getStatus = (userId) => {
   });
 };
 
-getStatus(2).then((status) => {
+/*
+adding async infront of the function so the function returns a Promise
+and the returned value will be the argument in the resolve call
+throw new Error(argument) will replace the usage of reject(argument)
+(returning something -> resolving; throwing an error -> rejecting)
+e.g.
+const getStatusAlt = async (userId) => {
+  throw new Error('This is an error');
+  return 'Mike'
+};
+
+same as:
+(userId) => {
+  return new Promise((resolve, reject) => {
+  reject('This is an error');
+  resolve('Mike');
+  })
+}
+*/
+const getStatusAlt = async (userId) => {
+
+  // the resolved value of the Promise will get stored in user variable
+  const user = await getUser(userId); // we can only use await inside async function
+  const grades = await getGrades(user.schoolId);
+
+  let average = 0;
+
+  if (grades.length > 0) {
+    average = grades.map((grade) => grade.grade).reduce((acc, cur) => acc + cur) / grades.length;
+  }
+
+  return `${user.name} has ${average}% in the class`;
+};
+
+// console.log(getStatusAlt());
+getStatusAlt(2).then((status) => {
   console.log(status);
 }).catch((e) => {
   console.log(e);
-})
+});
+
+
+// getStatus(2).then((status) => {
+//   console.log(status);
+// }).catch((e) => {
+//   console.log(e);
+// })
 // getGrades(12).then((grades) => {
 //   console.log(grades);
 // }).catch((e) => {
